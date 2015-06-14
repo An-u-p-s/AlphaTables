@@ -1,0 +1,38 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Jun 9, 2015, 12:29:55 AM
+    Author     : user1
+*/
+
+
+.alphatable {  border-collapse: collapse; border-left:1px solid #000;border-top:1px solid #000;border-right:1px solid #000; font-family: "Arial",Georgia, sans-serif; font-size: 14px;width:100%; box-shadow: 1px 1px 1px #808080;float:left;}
+.alphatable-row-header { background-color:#000;color:#fff;height:30px;font-weight:bold;border-bottom:1px solid #000; }
+.alphatable-row-filter { background-color:#000;color:#000;height:30px;font-weight:bold;border-bottom:1px solid #000; }
+.alphatable-row-col { color:#000;height:30px;border-bottom:1px solid #000; }
+.alphatable-row-col:hover { background-color: #808080; color:#ccc; }
+.alphatable-col-filterIcon { float:left; }
+.alphatable-col-header { border-bottom:1px solid #000; }
+.alphatable-row-even { background-color:#ccc; }
+.alphatable-row-odd { background-color:#ADBCBF; }
+
+#alphatable-popbackground { display: none;position: fixed;top: 0%;left: 0%;width: 100%;height: 100%;background-color: #ccc;
+                            z-index:1001;-moz-opacity: 0.8;opacity:.80;filter: alpha(opacity=80); }
+#alphatable-popupfront {  overflow:hidden;display: none;position: fixed;margin-left:10%;margin-top:2%; width: 70%;
+                          height:400px;padding: 16px; border: 4px solid #000;border-bottom-left-radius: 5px;
+                          border-bottom-right-radius: 5px;border-top-left-radius: 5px;box-shadow: 10px 10px 5px #888888;
+                          background-color: white;z-index:1002; }
+#alphatable-popclose { height:28px;width:30px;position:fixed;left:82%; margin-top:-2%;z-index:-1;overflow: hidden; }
+#alphatable-delete { height:18px;width:20px;border-radius:50px;margin-left:1%;cursor:pointer; }
+
+
+#alphatable-crudheader, .alphatable-crudlabel { font-family: "Arial", Georgia, sans-serif;}
+#alphatable-crudheader { width:100%;height:20px;font-weight: bold; }
+.alphatable-crudDiv { width:100%;height:100%; }
+.alphatable-crudlabel {width:20%;height:25px;margin-top:0.5%;margin-bottom:1%;float:left; }
+.alphatable-crudInput { width:80%;height:40px;margin-bottom:1%; float:left; }
+
+.alphatable-inputform-control { width:99.30%;height:30px;border-radius: 5px;font-size: 18px;color:#808080; border:1px solid #000; }
