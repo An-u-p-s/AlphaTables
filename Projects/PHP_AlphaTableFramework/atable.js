@@ -4,21 +4,29 @@
  * and open the template in the editor.
  */
 /* global Variable Declarations */
+var g_divId;       // Division Id where Table is going to be inserted
+var g_dataType;    // Type of Input where user is providing
 var g_tableId;     // tableId
+
 /* Table-Input- JSON */
+var g_tablepropJSON;  // JSON Input From the User
 var g_view_columnheader;  // user input - column header JSON
 var g_view_columndata;    // user input - column data JSON
 
+/* Adding Rows Functionality */
 var g_add_pophead;
 var g_add_popsubmitBtn;
 var g_add_submitURL;
 
+/* Editing Rows Functionality */
 var g_edit_index;   // index of column data JSON
 var g_edit_pophead;
 var g_edit_popsubmitBtn;
 var g_edit_submitURL;
+var g_edit_json={};  // Non-Edited Row Data 
+var g_edited_json={};   // Edited Row Data
 
-var g_edit_json;
+/* Other Neccessary Functionality */
 var g_columnNames=[];  // list of columns
 var g_edit_columnValues=[];
 var g_distinct_columnValues=[];    // list of column values in Each Distinct Column Value get as columnValues[columnNames.length]
@@ -80,8 +88,12 @@ function loadAlphatable(divId)
 function initializetable(divId, datatype, tablepropJSON)
 /* FUNCTION : The First Function that creates the table */
 {
+    g_addfilter=false;
     if(datatype==='JSON'){
-        tableDataDivision(tablepropJSON);
+        g_divId=divId;
+        g_tablepropJSON=tablepropJSON;
+        g_dataType=datatype;
+        tableDataDivision();
     }
     
     
@@ -109,10 +121,22 @@ function initializetable(divId, datatype, tablepropJSON)
     
     }
   
-  // Last Row - Delete
+  // Last Row - Edit and Delete
   top_row.insertCell(g_view_columnheader.length).innerHTML="";
+  
+  
    /* Set Distinct Column Values */
-    for(var colheaderInd=0;colheaderInd<g_columnNames.length;colheaderInd++) {
+   setInitialDistinctFilterColValues();
+
+   /* Adding and viewing Column-Data */
+   loadAllTableData();
+  
+}
+
+function setInitialDistinctFilterColValues()
+{
+    console.log("setInitialDistinctFilterColValues : "+JSON.stringify(g_view_columndata));
+     for(var colheaderInd=0;colheaderInd<g_columnNames.length;colheaderInd++) {
         for(var coldataInd=0;coldataInd<g_view_columndata.length;coldataInd++) {
             var arrValRecognizer=false;
             for(var colArray=0;colArray<g_distinct_columnValues[colheaderInd].length;colArray++) {
@@ -126,10 +150,6 @@ function initializetable(divId, datatype, tablepropJSON)
             }  
         }
     }
-
-   /* Adding and viewing Column-Data */
-   loadAllTableData();
-  
 }
 
 var filter_json=[]; /* Format : filter_json=[{"columnIndex":"", "columnval":""}];*/
@@ -172,6 +192,7 @@ function loadAllTableData()
                 var columnData=g_view_columndata[coldata][g_columnNames[cellIndex]];
                 data_row.insertCell(cellIndex).innerHTML=columnData;
                 rowData[cellIndex]=columnData;
+                g_edit_json[g_columnNames[cellIndex]]=columnData;
             }
             
            
@@ -182,7 +203,7 @@ function loadAllTableData()
                  actionContent+='<img id="alphatable-delete" src="images/delete.png" onclick="deleteTableSubmit('+coldata+')"/>';
              action_row.innerHTML=actionContent;
              
-             g_edit_json=rowData;
+            // g_edit_json=rowData;
           
         rowIndex++;    
     }
@@ -341,16 +362,38 @@ function viewColfilter(columnval, colIndex)
    
     
       for(var filterIndex=0;filterIndex<filter_data.length;filterIndex++) {
+          var filter_rowData=[];
           var tableRow = table.insertRow(rowIndex);
             tableRow.setAttribute("id","alphatable-col");
-            tableRow.setAttribute("class","alphatable-row-col");
+            if(filterIndex%2==0) {
+                 tableRow.setAttribute("class","alphatable-row-col alphatable-row-even");
+            }
+           else {  tableRow.setAttribute("class","alphatable-row-col alphatable-row-odd");}
             tableRow.setAttribute("align","center");
+            
           for(var colNameIndex=0;colNameIndex<g_columnNames.length;colNameIndex++) {
               var cell=tableRow.insertCell(colNameIndex);
-              cell.innerHTML=filter_data[filterIndex][g_columnNames[colNameIndex]];
+              var filterData=filter_data[filterIndex][g_columnNames[colNameIndex]];
+              cell.innerHTML=filterData;
+              filter_rowData[colNameIndex]=filterData;
+              g_edit_json[g_columnNames[colNameIndex]]=filterData;
           }
           rowIndex++;
+          
+           var filter_action_row=tableRow.insertCell(g_columnNames.length);
+        
+            var actionContent='<img id="alphatable-delete" src="images/edit.png" onclick="EditclickOnIcon('+filterIndex+',\''+filter_rowData+'\');"/>';
+                 actionContent+='<img id="alphatable-delete" src="images/delete.png" onclick="deleteTableSubmit('+filterIndex+')"/>';
+             filter_action_row.innerHTML=actionContent;
+             
+          //    g_edit_json=filter_rowData;
       }
+      
+      /* Adding last Action Column */
+       
+            
+            
+             
 }
 
 function initialRowIndex()
@@ -442,18 +485,18 @@ function tablepopup(operate)
     
 }
 
-function tableDataDivision(tablepropJSON)
+function tableDataDivision()
 /* FUNCTION : This */
 {
-    g_view_columnheader=tablepropJSON.View.ColumnHeader; 
-    g_view_columndata=tablepropJSON.View.ColumnData;
-    g_add_pophead=tablepropJSON.Add.popupHeading;
-    g_add_popsubmitBtn=tablepropJSON.Add.popupSubmitBttn;
-    g_add_submitURL=tablepropJSON.Add.SubmitURL;
+    g_view_columnheader=g_tablepropJSON.View.ColumnHeader; 
+    g_view_columndata=g_tablepropJSON.View.ColumnData;
+    g_add_pophead=g_tablepropJSON.Add.popupHeading;
+    g_add_popsubmitBtn=g_tablepropJSON.Add.popupSubmitBttn;
+    g_add_submitURL=g_tablepropJSON.Add.SubmitURL;
     
-    g_edit_pophead=tablepropJSON.Edit.popupHeading;
-    g_edit_popsubmitBtn=tablepropJSON.Edit.popupSubmitBttn;
-    g_edit_submitURL=tablepropJSON.Edit.SubmitURL;
+    g_edit_pophead=g_tablepropJSON.Edit.popupHeading;
+    g_edit_popsubmitBtn=g_tablepropJSON.Edit.popupSubmitBttn;
+    g_edit_submitURL=g_tablepropJSON.Edit.SubmitURL;
             
 }
 
@@ -463,12 +506,8 @@ function addTableSubmit()
     for(var colIndex=0;colIndex<g_columnNames.length;colIndex++) {
             addData[g_columnNames[colIndex]]=document.getElementById("alphatable-col-"+g_columnNames[colIndex]).value;
         }
-        
-    // Add into Table
+
     g_view_columndata.push(addData);
-    alphaPopupClose();
-    deleteTableData();
-    loadAllTableData();
    
     // Add into BackEnd
     var response;
@@ -477,6 +516,8 @@ function addTableSubmit()
            });
    // console.log(response);
     
+   document.getElementById("tableDisplay").innerHTML='';
+   initializetable(g_divId, g_dataType, g_tablepropJSON);
 }
 
 function editTableSubmit()
@@ -484,22 +525,24 @@ function editTableSubmit()
     var editData={};
     for(var colIndex=0;colIndex<g_columnNames.length;colIndex++) {
            var columnValue=document.getElementById("alphatable-col-"+g_columnNames[colIndex]).value
-            editData[g_columnNames[colIndex]]=columnValue;
+            editData[g_columnNames[colIndex]]=columnValue;   // Edit for Backend 
             g_view_columndata[g_edit_index][g_columnNames[colIndex]]=columnValue;  // Edit into Table
+            g_edited_json[g_columnNames[colIndex]]=columnValue;   // Setting updated Table Row value
+            // Check it already exist or else add it to Filter
+            
         }
-        
-   
-    
-    alphaPopupClose();
-    deleteTableData()
-    loadAllTableData();
+        console.log("g_tablepropJSON : "+JSON.stringify(g_tablepropJSON));
+        console.log("g_edit_json : "+JSON.stringify(g_edit_json));
+        console.log("g_edited_json : "+JSON.stringify(g_edited_json));
    
     // Add into BackEnd
     var response;
     $.ajax({type: "GET", async: false, url: g_edit_submitURL, data: editData,
             success: function(resp) { response=resp; }
            });
-    console.log(response);
+   // console.log(response);
+   document.getElementById("tableDisplay").innerHTML='';
+   initializetable(g_divId, g_dataType, g_tablepropJSON);
 }
 
 
@@ -508,6 +551,9 @@ function deleteTableSubmit(coldata)
     console.log(coldata);
     g_view_columndata.splice(coldata,1);
     
-    deleteTableData()
+    deleteTableData();
     loadAllTableData();
+    
+   document.getElementById("tableDisplay").innerHTML='';
+   initializetable(g_divId, g_dataType, g_tablepropJSON);
 }
